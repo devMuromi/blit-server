@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from image.models import Image
+from image.models import Image, Tag
 
 # class ImageSerializer(serializers.ModelSerializer):
 #     image = serializers.ImageField(max_length=None, use_url=True)
@@ -7,7 +7,16 @@ from image.models import Image
 #     uploaded_at = serializers.DateTimeField(auto_now_add=True)
 #     uploaded_by = serializers.ForeignKey("", verbose_name=_(""), on_delete=models.CASCADE)
 
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ("id", "name")
+
+
 class ImageSerializer(serializers.ModelSerializer):
+    # tag = TagSerializer(many=True, read_only=True)
+
     class Meta:
         model = Image
-        fields = ('id', 'image', 'title', 'uploaded_at', 'uploaded_by')
+        fields = ("id", "image", "title", "uploaded_at", "uploaded_by", "tag")
