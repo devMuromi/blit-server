@@ -10,6 +10,7 @@ packages = [{include = "npt_a"}]
 python = "^3.11"
 Django = "^4.1.7"
 django-rest-framework = "^0.1.0"
+pillow = "^9.4.0"
 
 
 [build-system]
