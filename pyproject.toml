@@ -13,6 +13,7 @@ django-rest-framework = "^0.1.0"
 pillow = "^9.4.0"
 black = "^23.1.0"
 easyocr = "^1.6.2"
+pytesseract = "^0.3.10"
 
 
 [tool.poetry.group.dev.dependencies]
