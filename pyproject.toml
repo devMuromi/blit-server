@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "npt-a"
+name = "blit-server"
 version = "0.1.0"
 description = ""
 authors = ["devMuromi <devmuromi@gmail.com>"]
 readme = "README.md"
-packages = [{include = "npt_a"}]
+packages = [{include = "blit-server"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
