@@ -1,12 +1,24 @@
 from easyocr import Reader
 import argparse
 import cv2
+from PIL import Image, ImageFont, ImageDraw
+import numpy as np
 
 
-def cleanup_text(text):
-    # strip out non-ASCII text so we can draw the text on the image
-    # using OpenCV
-    return "".join([c if ord(c) < 128 else "" for c in text]).strip()
+# 영수증의 roi 따기
+# 그 안에서 품목들의 roi 따기.
+
+
+def found_row(text: str):
+    """
+    check if text is a row
+    """
+
+
+# Example usage
+input_str = "I have 3 oranges and 4 apples."
+output_str = fix_numbers(input_str)
+print(output_str)
 
 
 # construct the argument parser and parse the arguments
@@ -32,10 +44,16 @@ print("[INFO] OCR'ing with the following languages: {}".format(langs))
 image = cv2.imread(args["image"])
 # OCR the input image using EasyOCR
 print("[INFO] OCR'ing input image...")
+
 reader = Reader(langs, gpu=args["gpu"] > 0)
 results = reader.readtext(image)
 
+# 한글 폰트 로드
+fontpath = "./media/fonts/NanumGothicBold.ttf"
+font = ImageFont.truetype(fontpath, 30)
+
 # loop over the results
+# result type: ([[x1,y1] [x2,y2] [x3,y3] [x4,y4]], 'text', 0.9999)
 for bbox, text, prob in results:
     # display the OCR'd text and associated probability
     print("[INFO] {:.4f}: {}".format(prob, text))
@@ -45,13 +63,14 @@ for bbox, text, prob in results:
     tr = (int(tr[0]), int(tr[1]))
     br = (int(br[0]), int(br[1]))
     bl = (int(bl[0]), int(bl[1]))
-    # cleanup the text and draw the box surrounding the text along
-    # with the OCR'd text itself
-    text = cleanup_text(text)
+
     cv2.rectangle(image, tl, br, (0, 255, 0), 2)
-    cv2.putText(
-        image, text, (tl[0], tl[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2
-    )
+    text = fix_numbers(text)
+    # pil로 텍스트 출력
+    pil_image = Image.fromarray(image)
+    draw = ImageDraw.Draw(pil_image)
+    draw.text((tl[0], tl[1]), text, (0, 255, 0), font=font)
+    image = np.array(pil_image)
 # show the output image
 cv2.imshow("Image", image)
 cv2.waitKey(0)
