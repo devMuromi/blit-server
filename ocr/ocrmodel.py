@@ -28,22 +28,14 @@ def get_receipt_image(receipt_id):
     return receipt, image
 
 
+def create_image_file(receipt, image, ocr_type: str):
+    basename, ext = os.path.splitext(receipt.image.name)
+    new_filename = f"{basename}_{ocr_type}{ext}"
+    new_file_path = os.path.join(settings.MEDIA_ROOT, new_filename)
+    cv2.imwrite(new_file_path, image)
+
+
 def modify_image(image, results):
-    def fix_numbers(text: str):
-        """
-        remove comma and space from text
-        if 0 is regonized as o or O, change it to 0
-        """
-        text = text.replace(" ", "").replace(",", "")
-
-        chars = list(text)
-        if chars[0].isdigit():
-            for i in range(len(chars)):
-                if chars[i] == "o" or chars[i] == "O":
-                    chars[i] = "0"
-            return "".join(chars)
-        return text
-
     fontpath = settings.MEDIA_ROOT + "/fonts/NanumGothicBold.ttf"
     font = ImageFont.truetype(fontpath, 30)
 
@@ -58,7 +50,6 @@ def modify_image(image, results):
         bl = (int(bl[0]), int(bl[1]))
 
         cv2.rectangle(image, tl, br, (0, 255, 0), 2)
-        text = fix_numbers(text)
         # pil로 텍스트 출력
         pil_image = Image.fromarray(image)
         draw = ImageDraw.Draw(pil_image)
@@ -68,11 +59,51 @@ def modify_image(image, results):
     return image
 
 
-def create_image_file(receipt, image, ocr_type: str):
-    basename, ext = os.path.splitext(receipt.image.name)
-    new_filename = f"{basename}_{ocr_type}{ext}"
-    new_file_path = os.path.join(settings.MEDIA_ROOT, new_filename)
-    cv2.imwrite(new_file_path, image)
+def reg_number(results: list) -> None:
+    for result in results:
+        """
+        remove comma and space from text
+        if 0 is regonized as o or O, change it to 0
+        """
+        result[1] = result[1].replace(" ", "").replace(",", "")
+
+        chars = list(result[1])
+        if chars[0].isdigit():
+            for i in range(len(chars)):
+                if chars[i] == "o" or chars[i] == "O":
+                    chars[i] = "0"
+            result[1] = "".join(chars)
+
+
+def found_head(results: list):
+    """
+    상품명, 단가, 수량, 금액 표기를 찾아 반환
+    """
+    ret = [None, None, None, None]
+    for i in range(len(results)):
+        result = results[i]
+        if result[1] == "상품명" or result[1] == "메뉴":
+            ret[0] = i
+        elif result[1] == "단가":
+            ret[1] = i
+        elif result[1] == "수량":
+            ret[2] = i
+        elif result[1] == "금액":
+            ret[3] = i
+
+    return ret
+
+
+def filter_upperhead(results: list) -> None:
+    heads = found_head(results)
+    highest_y = 0
+    for i in heads:
+        if i != None and results[i][0][0][1] > highest_y:
+            highest_y = results[i][0][0][1]
+
+    to_remove = [result for result in results if result[0][2][1] < highest_y]
+    for result in to_remove:
+        results.remove(result)
 
 
 def easyocr(receipt_id):
@@ -84,6 +115,10 @@ def easyocr(receipt_id):
     results = reader.readtext(image)
     # results: list of result
     # result format: ([[x1, y1], [x2, y2], [x3, y3], [x4, y4]], text, prob)
+    for i in range(len(results)):
+        results[i] = list(results[i])
+    reg_number(results)
+    filter_upperhead(results)
     print(results)
 
     # add ocr text to receipt image
