@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path("auth/", include("user.urls")),
     path("receipt/", include("receipt.urls")),
     path("ocr/", include("ocr.urls")),
     path("admin/", admin.site.urls),
