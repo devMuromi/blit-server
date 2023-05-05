@@ -1,32 +1,35 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 from receipt.models import Receipt
 
 import requests
 import json
 import base64
 import os
-import cv2
 from django.conf import settings
 
-# from . import ocrmodel
+
+URL = "urlcomeshere"
+SECRET_KEY = "XXXXXXXXXXXXXXXXXX"
 
 
 def ocr(request, pk):
-    ret = clova_ocr(pk)
-    print(ret)
-    return HttpResponse(json.dumps(ret), content_type="text/html")
-
-
-def clova_ocr(receipt_id: int) -> dict:
-    def get_receipt_image(receipt_id):
-        """
-        Get receipt object and image matrix by receipt_id
-        """
-        receipt = Receipt.objects.get(id=receipt_id)
+    receipt = Receipt.objects.get(id=pk)
+    if receipt.data == None:
         image_path = os.path.join(settings.MEDIA_ROOT, str(receipt.image))
-        image = cv2.imread(image_path)
-        return receipt, image
+        with open(image_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
 
+        raw_data, extracted_data = clova_ocr(encoded_string)
+
+        receipt.raw_data = raw_data
+        receipt.data = extracted_data
+        receipt.save()
+
+    print(receipt.data)
+    return JsonResponse(receipt.data)
+
+
+def clova_ocr(string_encoded_receipt_image: str) -> tuple[dict, dict]:
     def extract_data(data: dict) -> dict:
         """
         Extract data from ocr result
@@ -45,75 +48,77 @@ def clova_ocr(receipt_id: int) -> dict:
             "items": [
                 {
                     "name": "name",
-                    "unitPrice": "unitPrice:int",
-                    "count": "count:int",
-                    "price": "price:int",
+                    "unitPrice": "unitPrice",
+                    "count": "count",
+                    "price": "price",
                 }
             ],
-            "totalPrice": "total:int",
+            "totalPrice": "total",
             "success": "true",
         }
         """
-        data = data["images"][0]
+
         extracted_data = {
-            "success": "true" if data["inferResult"] == "SUCCESS" else "false",
-            "store": {
-                "name": data["receipt"]["result"]["storeInfo"]["name"]["formatted"][
-                    "value"
-                ],
-                "address": data["receipt"]["result"]["storeInfo"]["addresses"][0][
-                    "formatted"
-                ]["value"],
-            },
-            "date": {
-                "year": data["receipt"]["result"]["paymentInfo"]["date"]["formatted"][
-                    "year"
-                ],
-                "month": data["receipt"]["result"]["paymentInfo"]["date"]["formatted"][
-                    "month"
-                ],
-                "day": data["receipt"]["result"]["paymentInfo"]["date"]["formatted"][
-                    "day"
-                ],
-                "hour": data["receipt"]["result"]["paymentInfo"]["time"]["formatted"][
-                    "hour"
-                ],
-                "minute": data["receipt"]["result"]["paymentInfo"]["time"]["formatted"][
-                    "minute"
-                ],
-                "second": data["receipt"]["result"]["paymentInfo"]["time"]["formatted"][
-                    "second"
-                ],
-            },
-            "items": [],
+            "success": "true" if data["images"][0]["inferResult"] == "SUCCESS" else "false",
         }
-        for item in data["receipt"]["result"]["subResults"][0]["items"]:
-            extracted_data["items"].append(
-                {
-                    "name": item["name"]["formatted"]["value"],
-                    "unitPrice": item["price"]["unitPrice"]["formatted"]["value"],
-                    "count": item["count"]["formatted"]["value"],
-                    "price": item["price"]["price"]["formatted"]["value"],
-                }
-            )
+        if extracted_data["success"] == "true":
+            data = data["images"][0]["receipt"]["result"]
+            extracted_data["date"] = dict()
+            extracted_data["items"] = list()
+            extracted_data["store"] = dict()
+            try:
+                extracted_data["date"]["year"] = data["paymentInfo"]["date"]["formatted"]["year"]
+                extracted_data["date"]["month"] = data["paymentInfo"]["date"]["formatted"]["month"]
+                extracted_data["date"]["day"] = data["paymentInfo"]["date"]["formatted"]["day"]
+            except:
+                pass
+            try:
+                extracted_data["date"]["hour"] = data["paymentInfo"]["time"]["formatted"]["hour"]
+                extracted_data["date"]["minute"] = data["paymentInfo"]["time"]["formatted"]["minute"]
+            except:
+                pass
+            try:
+                extracted_data["store"]["name"] = data["storeInfo"]["name"]["formatted"]["value"]
+            except:
+                pass
+            try:
+                extracted_data["store"]["address"] = data["storeInfo"]["addresses"][0]["formatted"]["value"]
+            except:
+                pass
+            try:
+                for item in data["subResults"][0]["items"]:
+                    extracted_data["items"].append(
+                        {
+                            "name": item["name"]["formatted"]["value"] if item["name"]["formatted"]["value"] else "null",
+                            "unitPrice": item["price"]["unitPrice"]["formatted"]["value"]
+                            if item["price"]["unitPrice"]["formatted"]["value"]
+                            else "null",
+                            "count": item["count"]["formatted"]["value"] if item["count"]["formatted"]["value"] else "null",
+                            "price": item["price"]["price"]["formatted"]["value"]
+                            if item["price"]["price"]["formatted"]["value"]
+                            else "null",
+                        }
+                    )
+            except:
+                pass
+            try:
+                extracted_data["totalPrice"] = data["result"]["totalPrice"]["formatted"]["value"]
+            except:
+                pass
+
         return extracted_data
-
-    receipt, image = get_receipt_image(receipt_id)
-
-    image_data = cv2.imencode(".jpg", image)[1].tostring()
-    encoded_string = base64.b64encode(image_data).decode("utf-8")
 
     data = {
         "version": "V2",
         "requestId": "example",
         "resultType": "string",
         "timestamp": 0,
-        "images": [{"format": "jpg", "data": encoded_string, "name": "demo"}],
+        "images": [{"format": "jpg", "data": string_encoded_receipt_image, "name": "demo"}],
     }
     headers = {"X-OCR-SECRET": SECRET_KEY, "Content-Type": "application/json"}
     response = requests.post(URL, data=json.dumps(data), headers=headers)
     raw_data = json.loads(response.text)
+    print("clova ocr 완료", raw_data)
     extracted_data = extract_data(raw_data)
-    print(extracted_data)
 
-    return extracted_data
+    return raw_data, extracted_data

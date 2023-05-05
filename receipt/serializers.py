@@ -11,7 +11,7 @@ class ReceiptSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         image = validated_data.pop("image")
         receipt = super().create(validated_data)
-        day = datetime.now().strftime("%Y-%m-%d")
+        day = datetime.now().strftime("%Y%m%d")
         receipt.image.save(f"{day}-{receipt.id}.jpg", image)
         receipt.save()
         return receipt

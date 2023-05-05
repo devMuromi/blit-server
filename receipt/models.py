@@ -8,3 +8,4 @@ class Receipt(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     data = models.JSONField(null=True)
+    raw_data = models.JSONField(null=True)
