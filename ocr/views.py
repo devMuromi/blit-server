@@ -12,11 +12,8 @@ from django.conf import settings
 
 
 def ocr(request, pk):
-    # ocr_text = easyocr(pk)
-    # ocr_text = azure_vision(pk)
     ret = clova_ocr(pk)
     print(ret)
-
     return HttpResponse(json.dumps(ret), content_type="text/html")
 
 
