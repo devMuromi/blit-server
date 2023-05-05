@@ -6,6 +6,15 @@ from user.models import User
 
 class Pay(models.Model):
     content = models.JSONField()
+    title = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL)
+
+
+# class Subcribe(models.Model):
+#     content = models.JSONField()
+#     title = models.TextField()
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     created_by = models.ForeignKey(User, on_delete=models.SET_NULL)
