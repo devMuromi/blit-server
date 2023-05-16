@@ -1,20 +1,22 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from user.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
 
     def create(self, validated_data):
-        user = User.objects.create_user(email=validated_data["email"], password=validated_data["password"])
+        user = User.objects.create_user(username=validated_data["username"], password=validated_data["password"])
         return user
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class KakaoUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "password"]
+        fields = ["kakao_id"]
+
+    def create(self, validated_data):
+        user = User.objects.create_kakao_user(kakao_id=validated_data["kakao_id"])
+        return user

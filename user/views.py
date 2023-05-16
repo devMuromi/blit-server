@@ -1,12 +1,15 @@
 from rest_framework import generics
+from rest_framework.views import APIView
 from user.models import User
-from user.serializers import UserSerializer
+from user.serializers import BasicUserSerializer, KakaoUserSerializer
 from django.contrib.auth import authenticate
 from rest_framework import permissions
-from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
+
+# Auth
 
 
 class AuthAPIView(APIView):
@@ -41,13 +44,10 @@ class AuthAPIView(APIView):
     #         # 사용 불가능한 토큰일 때
     #         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    # 로그인
     def post(self, request):
-        # 유저 인증
-        user = authenticate(kakao_id=request.data.get("kakao_id"))
-        # 카카오 토큰을 받아서 유저 인증하는 파트가 여기 들어가야함.
+        user = authenticate(username=request.data.get("username"), password=request.data.get("password"))
         if user is not None:
-            serializer = UserSerializer(user)
+            # serializer = BasicUserSerializer(user)
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
@@ -69,18 +69,10 @@ class AuthAPIView(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    # 로그아웃
-    def delete(self, request):
-        # 쿠키에 저장된 토큰 삭제 => 로그아웃 처리
-        response = Response({"message": "Logout success"}, status=status.HTTP_202_ACCEPTED)
-        response.delete_cookie("access")
-        response.delete_cookie("refresh")
-        return response
-
 
 class RegisterAPIView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        serializer = BasicUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
             token = TokenObtainPairSerializer.get_token(user)
@@ -105,50 +97,62 @@ class RegisterAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
-    # lookup_field = "username"
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-
-# class MyPage(generics.RetrieveAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get_object(self):
-#         return self.request.user
-
-
-######## kakao
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-
-class SignUpAPIView(APIView):
+class KakaoAuthAPIView(APIView):
     permission_classes = [AllowAny]
+
+    def is_kakao_token_valid(self, kakao_id: str, kakao_token: str) -> bool:
+        """
+        카카오 서버에 토큰이 유효한지 확인
+        """
+        return True
 
     def post(self, request):
         kakao_id = request.data.get("kakao_id")
-        email = request.data.get("email")
-        # 기타 필요한 사용자 정보
+        kakao_token = request.data.get("kakao_token")
 
-        try:
-            user = User.objects.get(kakao_id=kakao_id)
-            return Response({"detail": "User already exists."}, status=400)
-        except User.DoesNotExist:
-            user = User.objects.create(kakao_id=kakao_id, email=email)
-            return Response({"detail": "User successfully created."}, status=201)
+        if self.is_kakao_token_valid(kakao_id, kakao_token):
+            try:
+                user = User.objects.get(kakao_id=kakao_id)
+                token = TokenObtainPairSerializer.get_token(user)
+                refresh_token = str(token)
+                access_token = str(token.access_token)
+                res = Response(
+                    {
+                        # "user": serializer.data,
+                        "message": "login success",
+                        "token": {
+                            "access": access_token,
+                            "refresh": refresh_token,
+                        },
+                    },
+                    status=status.HTTP_200_OK,
+                )
+                return res
+            except User.DoesNotExist:
+                serializer = KakaoUserSerializer(data=request.data)
+                if serializer.is_valid():
+                    user = serializer.save()
+                    token = TokenObtainPairSerializer.get_token(user)
+                    refresh_token = str(token)
+                    access_token = str(token.access_token)
+                    res = Response(
+                        {
+                            # "user": serializer.data,
+                            "message": "register successs",
+                            "token": {
+                                "access": access_token,
+                                "refresh": refresh_token,
+                            },
+                        },
+                        status=status.HTTP_200_OK,
+                    )
+                    return res
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            # if token is not valid
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginAPIView(APIView):
@@ -164,3 +168,18 @@ class LoginAPIView(APIView):
             return Response({"detail": "User logged in successfully."}, status=200)
         except User.DoesNotExist:
             return Response({"detail": "User does not exist."}, status=404)
+
+
+# Profile
+
+
+# class UserList(generics.ListAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+
+# class UserDetail(generics.RetrieveAPIView):
+#     # lookup_field = "username"
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#     permission_classes = [permissions.IsAuthenticated]
