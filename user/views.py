@@ -10,7 +10,6 @@ from rest_framework import status
 
 
 class AuthAPIView(APIView):
-    # 유저 정보 확인
     # def get(self, request):
     #     try:
     #         # access token을 decode 해서 유저 id 추출 => 유저 식별
@@ -45,9 +44,8 @@ class AuthAPIView(APIView):
     # 로그인
     def post(self, request):
         # 유저 인증
-        user = authenticate(
-            email=request.data.get("email"), password=request.data.get("password")
-        )
+        user = authenticate(kakao_id=request.data.get("kakao_id"))
+        # 카카오 토큰을 받아서 유저 인증하는 파트가 여기 들어가야함.
         if user is not None:
             serializer = UserSerializer(user)
             token = TokenObtainPairSerializer.get_token(user)
@@ -74,9 +72,7 @@ class AuthAPIView(APIView):
     # 로그아웃
     def delete(self, request):
         # 쿠키에 저장된 토큰 삭제 => 로그아웃 처리
-        response = Response(
-            {"message": "Logout success"}, status=status.HTTP_202_ACCEPTED
-        )
+        response = Response({"message": "Logout success"}, status=status.HTTP_202_ACCEPTED)
         response.delete_cookie("access")
         response.delete_cookie("refresh")
         return response
@@ -87,7 +83,6 @@ class RegisterAPIView(APIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-
             token = TokenObtainPairSerializer.get_token(user)
             refresh_token = str(token)
             access_token = str(token.access_token)
@@ -129,3 +124,43 @@ class UserDetail(generics.RetrieveAPIView):
 
 #     def get_object(self):
 #         return self.request.user
+
+
+######## kakao
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class SignUpAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        kakao_id = request.data.get("kakao_id")
+        email = request.data.get("email")
+        # 기타 필요한 사용자 정보
+
+        try:
+            user = User.objects.get(kakao_id=kakao_id)
+            return Response({"detail": "User already exists."}, status=400)
+        except User.DoesNotExist:
+            user = User.objects.create(kakao_id=kakao_id, email=email)
+            return Response({"detail": "User successfully created."}, status=201)
+
+
+class LoginAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        kakao_id = request.data.get("kakao_id")
+
+        try:
+            user = User.objects.get(kakao_id=kakao_id)
+            # 로그인 처리를 위한 적절한 로직을 수행합니다.
+            # 예시: 토큰 기반 인증을 사용하여 사용자를 로그인 상태로 유지합니다.
+            return Response({"detail": "User logged in successfully."}, status=200)
+        except User.DoesNotExist:
+            return Response({"detail": "User does not exist."}, status=404)

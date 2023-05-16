@@ -7,9 +7,8 @@ import base64
 import os
 from django.conf import settings
 
-
-URL = "urlcomeshere"
-SECRET_KEY = "XXXXXXXXXXXXXXXXXX"
+URL = settings.CLOVA_API_URL
+SECRET_KEY = settings.CLOVA_API_KEY
 
 
 def ocr(request, pk):
@@ -25,7 +24,7 @@ def ocr(request, pk):
         receipt.data = extracted_data
         receipt.save()
 
-    print(receipt.data)
+    # print(receipt.data)
     return JsonResponse(receipt.data)
 
 
@@ -34,6 +33,7 @@ def clova_ocr(string_encoded_receipt_image: str) -> tuple[dict, dict]:
         """
         Extract data from ocr result
         return format: {
+            "success": "true",
             "store": {
                 "name": "name",
                 "address": "address",
@@ -54,7 +54,6 @@ def clova_ocr(string_encoded_receipt_image: str) -> tuple[dict, dict]:
                 }
             ],
             "totalPrice": "total",
-            "success": "true",
         }
         """
 
