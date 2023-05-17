@@ -13,5 +13,6 @@ class ReceiptSerializer(serializers.ModelSerializer):
         receipt = super().create(validated_data)
         day = datetime.now().strftime("%Y%m%d")
         receipt.image.save(f"{day}-{receipt.id}.jpg", image)
+        receipt.uploaded_by = self.context["request"].user
         receipt.save()
         return receipt

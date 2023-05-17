@@ -8,6 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
+import requests
 
 # Auth
 
@@ -104,7 +105,17 @@ class KakaoAuthAPIView(APIView):
         """
         카카오 서버에 토큰이 유효한지 확인
         """
-        return True
+        url = "https://kapi.kakao.com/v2/user/me"
+        headers = {"Authorization": f"Bearer {kakao_token}", "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except requests.exceptions.RequestException as e:
+            print(f"Error occurred: {e}")
+            return False
 
     def post(self, request):
         kakao_id = request.data.get("kakao_id")
