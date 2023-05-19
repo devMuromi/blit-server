@@ -101,28 +101,43 @@ class RegisterAPIView(APIView):
 class KakaoAuthAPIView(APIView):
     permission_classes = [AllowAny]
 
-    def is_kakao_token_valid(self, kakao_id: str, kakao_token: str) -> bool:
-        """
-        카카오 서버에 토큰이 유효한지 확인
-        """
+    # def is_kakao_token_valid(self, kakao_id: str, kakao_token: str) -> bool:
+    #     """
+    #     카카오 서버에 토큰이 유효한지 확인
+    #     """
+    #     url = "https://kapi.kakao.com/v2/user/me"
+    #     headers = {"Authorization": f"Bearer {kakao_token}", "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    #     try:
+    #         response = requests.get(url, headers=headers)
+    #         if response.status_code == 200:
+    #             return True
+    #         else:
+    #             return False
+    #     except requests.exceptions.RequestException as e:
+    #         print(f"Error occurred: {e}")
+    #         return False
+
+    def get_kakao_id(self, kakao_token: str) -> str:
         url = "https://kapi.kakao.com/v2/user/me"
         headers = {"Authorization": f"Bearer {kakao_token}", "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
         try:
             response = requests.get(url, headers=headers)
             if response.status_code == 200:
-                return True
+                return response.json().get("id")
             else:
-                return False
+                return None
         except requests.exceptions.RequestException as e:
             print(f"Error occurred: {e}")
-            return False
+            return None
 
     def post(self, request):
-        kakao_id = request.data.get("kakao_id")
+        # kakao_id = request.data.get("kakao_id")
         kakao_token = request.data.get("kakao_token")
+        kakao_id = self.get_kakao_id(kakao_token)
+        print("kakao_id:", kakao_id)
 
-        if self.is_kakao_token_valid(kakao_id, kakao_token):
-            try:
+        if kakao_token is not None:
+            if User.objects.filter(kakao_id=kakao_id).exists():
                 user = User.objects.get(kakao_id=kakao_id)
                 token = TokenObtainPairSerializer.get_token(user)
                 refresh_token = str(token)
@@ -139,8 +154,8 @@ class KakaoAuthAPIView(APIView):
                     status=status.HTTP_200_OK,
                 )
                 return res
-            except User.DoesNotExist:
-                serializer = KakaoUserSerializer(data=request.data)
+            else:
+                serializer = KakaoUserSerializer(data={"kakao_id": "value"})
                 if serializer.is_valid():
                     user = serializer.save()
                     token = TokenObtainPairSerializer.get_token(user)
