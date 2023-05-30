@@ -1,6 +1,11 @@
 from django.http import JsonResponse
 from receipt.models import Receipt
 
+from rest_framework.decorators import api_view, permission_classes
+from receipt import permissions as custom_permissions
+from rest_framework import permissions
+
+
 import requests
 import json
 import base64
@@ -11,8 +16,14 @@ URL = settings.CLOVA_API_URL
 SECRET_KEY = settings.CLOVA_API_KEY
 
 
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
 def ocr(request, pk):
     receipt = Receipt.objects.get(id=pk)
+
+    if receipt.uploaded_by != request.user:
+        return JsonResponse({"detail": "You do not have permission to perform this action."})
+
     if receipt.data == None:
         image_path = os.path.join(settings.MEDIA_ROOT, str(receipt.image))
         with open(image_path, "rb") as image_file:

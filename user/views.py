@@ -7,13 +7,14 @@ from rest_framework import permissions
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny
 import requests
+from rest_framework import permissions
 
 # Auth
 
 
 class AuthAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
     # def get(self, request):
     #     try:
     #         # access token을 decode 해서 유저 id 추출 => 유저 식별
@@ -99,7 +100,7 @@ class RegisterAPIView(APIView):
 
 
 class KakaoAuthAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     # def is_kakao_token_valid(self, kakao_id: str, kakao_token: str) -> bool:
     #     """
@@ -182,7 +183,7 @@ class KakaoAuthAPIView(APIView):
 
 
 class LoginAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         kakao_id = request.data.get("kakao_id")

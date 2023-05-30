@@ -1,13 +1,12 @@
-from django.shortcuts import render
-import requests
-import matplotlib.pyplot as plt
-
-from PIL import Image
-from io import BytesIO
-from django.conf import settings
 from django.http import HttpResponse
+from django.conf import settings
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import permissions
 
 
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
 def test(request):
     a = get_image_by_name("카페라떼")
     print(a)
