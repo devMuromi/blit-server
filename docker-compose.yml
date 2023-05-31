@@ -22,15 +22,8 @@ services:
       - 8000:8000
     depends_on:
       - db
-    command: gunicorn config.wsgi --bind 0.0.0.0:8000
+    env-file:
+      - ./.env
     volumes:
       - ./static:/staticfiles
-    environment:
-      - SECRET_KEY=
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
-      - SQL_DATABASE=blit_db
-      - SQL_USER=admin
-      - SQL_PASSWORD=
-      - AZURE_BING_SEARCH_API_KEY=
-      - CLOVA_API_URL=
-      - CLOVA_API_KEY=
+    command: gunicorn config.wsgi --bind 0.0.0.0:8000
