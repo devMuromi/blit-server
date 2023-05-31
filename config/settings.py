@@ -7,7 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = "1234"
+# SECRET_KEY = os.environ.get("SECRET_KEY")
 AZURE_BING_SEARCH_API_KEY = os.environ.get("AZURE_BING_SEARCH_API_KEY", "")
 CLOVA_API_URL = os.environ.get(
     "CLOVA_API_URL",
