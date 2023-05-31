@@ -1,10 +1,6 @@
-FROM ubuntu:18.04
+FROM python:3.10
 
 ENV PYTHONUNBUFFERED=0
-
-RUN apt-get update && \
-    apt-get install -y python3-pip python3-dev && \
-    apt-get clean
 
 WORKDIR /web
 
