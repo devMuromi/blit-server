@@ -7,7 +7,7 @@ services:
   db:
     image: postgres
     environment: 
-      - POSTGRES_DB=dlit_db
+      - POSTGRES_DB=blit_db
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=1234
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8
@@ -19,11 +19,11 @@ services:
   django:
     build: .
     ports:
-      - 8000:8000
+      - 80:80
     depends_on:
       - db
     env_file:
       - web.env
     volumes:
       - ./static:/staticfiles
-    command: gunicorn config.wsgi --bind 0.0.0.0:8000
+    command: gunicorn config.wsgi --bind 0.0.0.0:80
