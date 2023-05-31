@@ -4,18 +4,14 @@ ENV PYTHONUNBUFFERED=0
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    curl
+RUN apt-get update && apt-get install -y
 
-RUN curl -sSL https://install.python-poetry.org | python -
+COPY requirements.txt ./
 
-COPY pyproject.toml poetry.lock ./
-
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi --no-dev
+RUN pip install -r requirements.txt
 
 COPY . .
 
 RUN poetry run python manage.py collectstatic --noinput
 
-CMD poetry run gunicorn config.wsgi:application --bind 0.0.0.0:8000
+CMD gunicorn config.wsgi:application --bind 0.0.0.0:8000
