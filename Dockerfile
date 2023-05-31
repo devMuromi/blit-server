@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM python:3.9
 
 ENV PYTHONUNBUFFERED=0
 
@@ -7,7 +7,7 @@ RUN apt update && \
     apt install -y poetry && \
     apt-get clean 
 
-WORKDIR /home/app
+WORKDIR /web
 
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-interaction --no-ansi
