@@ -1,33 +1,18 @@
-# Base image
-FROM python:3.9-slim
+FROM python:3.9-slim-buster
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# Install system dependencies
-RUN apt-get update \
-    && apt-get install -y \
-    gcc \
-    libpq-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /home/app
 
-# Set working directory
-WORKDIR /code
-
-# Install project dependencies
-COPY poetry.lock pyproject.toml /code/
 RUN pip install poetry
-RUN poetry config virtualenvs.create false
-RUN poetry install --no-interaction --no-ansi
 
-# Copy project files
-COPY . /code/
+COPY pyproject.toml poetry.lock ./
 
-# Collect static files
-RUN python manage.py collectstatic --no-input
+RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-# Run the application
-CMD gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
+COPY . .
+
+RUN poetry run python manage.py collectstatic --noinput
+
+CMD poetry run gunicorn your_project.wsgi:application --bind 0.0.0.0:8000
