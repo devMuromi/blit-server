@@ -19,14 +19,14 @@ services:
 
   django:
     build: .
-    restart: always
-    command: gunicorn config.wsgi --bind 0.0.0.0:8000
-    expose:
-      - "8000"
-    volumes:
-      - ./static:/staticfiles
+    ports:
+      - 8000:8000
     depends_on:
       - db
+    command: gunicorn config.wsgi --bind 0.0.0.0:8000
+    volumes:
+      - ./static:/staticfiles
+
     environment:
       - DJANGO_DEBUG=False
       - DJANGO_SECRET_KEY=
@@ -37,14 +37,3 @@ services:
       - SQL_PASSWORD=
       - SQL_HOST=db
       - SQL_PORT=5432
-
-  nginx:
-    container_name: nginx
-    image: nginx:latest
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-      - ./static:/staticfiles
-    depends_on:
-      - django
