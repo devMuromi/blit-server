@@ -2,29 +2,26 @@ import os
 from pathlib import Path
 import datetime
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "")
-AZURE_BING_SEARCH_API_KEY = os.environ.get("AZURE_BING_SEARCH_API_KEY")
-CLOVA_API_URL = os.environ.get("CLOVA_API_URL")
-CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
+AZURE_BING_SEARCH_API_KEY = os.environ.get("AZURE_BING_SEARCH_API_KEY", "")
+CLOVA_API_URL = os.environ.get(
+    "CLOVA_API_URL",
+    "",
+)
+CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY", "")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", False)
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-# ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
 
 # Application definition
-
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -123,7 +120,7 @@ DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.postgresql"),
         "NAME": os.environ.get("SQL_DATABASE", os.path.join(BASE_DIR, "db.postgresql")),
-        "USER": os.environ.get("SQL_USER", "user"),
+        "USER": os.environ.get("SQL_USER", "admin"),
         "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
         "HOST": os.environ.get("SQL_HOST", "db"),
         "PORT": os.environ.get("SQL_PORT", "5432"),
@@ -168,6 +165,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(ROOT_DIR, ".static_root")
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
 
 # Actual directory user files go to
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

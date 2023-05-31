@@ -1,17 +1,17 @@
-FROM python:3.9
+FROM python:3.10
 
 ENV PYTHONUNBUFFERED=0
 
-WORKDIR /app
+WORKDIR /web
 
-RUN apt-get update && apt-get install -y
+RUN apt-get update
 
-COPY requirements.txt ./
-
-RUN pip install -r requirements.txt
+COPY ./requirements.txt ./
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 
 COPY . .
 
-RUN poetry run python manage.py collectstatic --noinput
+RUN python manage.py collectstatic --noinput
 
 CMD gunicorn config.wsgi:application --bind 0.0.0.0:8000

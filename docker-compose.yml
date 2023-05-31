@@ -3,13 +3,12 @@ version: "3"
 volumes:
   postgres_db: {}
 
-
 services:
   db:
     image: postgres
     environment: 
-      - POSTGRES_DB=[DB NAME]
-      - POSTGRES_USER=[DB USERNAME]
+      - POSTGRES_DB=dlit_db
+      - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=[DB PASSWORD]
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8
     ports:
@@ -26,14 +25,12 @@ services:
     command: gunicorn config.wsgi --bind 0.0.0.0:8000
     volumes:
       - ./static:/staticfiles
-
     environment:
-      - DJANGO_DEBUG=False
-      - DJANGO_SECRET_KEY=
-      - DJANGO_ALLOWED_HOST=localhost 127.0.0.1
-      - SQL_ENGINE=django.db.backends.postgresql
+      - SECRET_KEY=
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
       - SQL_DATABASE=blit_db
-      - SQL_USER=
+      - SQL_USER=admin
       - SQL_PASSWORD=
-      - SQL_HOST=db
-      - SQL_PORT=5432
+      - AZURE_BING_SEARCH_API_KEY=
+      - CLOVA_API_URL=
+      - CLOVA_API_KEY=

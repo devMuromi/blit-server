@@ -19,7 +19,3 @@ npt a조 백엔드
 - 개발용 서버 실행
     `poetry run python manage.py runserver`
 
-- Tesseract 설치(mac brew)
-    `brew install tesseract`
-    `brew install tesseract-lang`
-    
