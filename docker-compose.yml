@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn myproject.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DEBUG=False
+      - DJANGO_SECRET_KEY=
+      - DJANGO_ALLOWED_HOST=localhost 127.0.0.1
+
+  db:
+    image: sqlite:latest
+    volumes:
+      - ./db:/db
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./static:/code/static
+    depends_on:
+      - web

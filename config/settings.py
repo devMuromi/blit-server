@@ -11,12 +11,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "temporarykey"
+SECRET_KEY = os.environ.get("SECRET_KEY", "")
+AZURE_BING_SEARCH_API_KEY = os.environ.get("AZURE_BING_SEARCH_API_KEY")
+CLOVA_API_URL = os.environ.get("CLOVA_API_URL")
+CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+# ALLOWED_HOSTS = ["localhost"]
 
 # Application definition
 
@@ -42,9 +47,7 @@ REST_FRAMEWORK = {
         # "rest_framework.permissions.IsAdminUser",
         # "rest_framework.permissions.AllowAny",
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
 }
 
