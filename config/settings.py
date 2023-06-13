@@ -7,21 +7,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "1234"
-# SECRET_KEY = os.environ.get("SECRET_KEY")
-AZURE_BING_SEARCH_API_KEY = os.environ.get("AZURE_BING_SEARCH_API_KEY", "")
-CLOVA_API_URL = os.environ.get(
-    "CLOVA_API_URL",
-    "",
-)
-CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY", "")
-
+SECRET_KEY = os.environ.get("SECRET_KEY")
+AZURE_BING_SEARCH_API_KEY = os.environ.get("AZURE_BING_SEARCH_API_KEY")
+CLOVA_API_URL = os.environ.get("CLOVA_API_URL")
+CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -31,8 +25,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # 라이브러리
     "rest_framework",
     "rest_framework_simplejwt",
+    # 앱
     "user",
     "receipt",
     "ocr",
@@ -40,17 +36,17 @@ INSTALLED_APPS = [
 
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": (
-        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.IsAuthenticated",
         # "rest_framework.permissions.IsAdminUser",
         # "rest_framework.permissions.AllowAny",
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
