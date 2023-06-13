@@ -9,10 +9,13 @@ from receipt.models import Receipt
 from receipt.serializers import ReceiptSerializer
 
 
-class ReceiptCreate(generics.CreateAPIView):
+class ReceiptListCreate(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Receipt.objects.all()
     serializer_class = ReceiptSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Receipt.objects.filter(uploaded_by=user)
 
 
 class ReceiptDetail(generics.RetrieveUpdateDestroyAPIView):
