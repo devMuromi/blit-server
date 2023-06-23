@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.conf import settings
 import requests
+from user.views import get_kakao_id
+from user.models import User
+from django.contrib.auth import login, authenticate
+
 
 # 회식을 만드는 뷰
 # 초대 url로 접속가능한 템플릿
@@ -15,7 +19,16 @@ def kakao_login():
 
 def meeting(request):
     user = request.user
-    # 로그인이 안된 경우 -> 카카오 로그인
+    if user.is_authenticated:
+        print(user)
+        return render(request, "invite.html")
+
+    else:  # 비로그인 상태
+        client_id = settings.KAKAO_REST_API_KEY
+    redirect_uri = "http://localhost:8000/meeting/kakao_callback"
+    return redirect(
+        f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
+    )
 
     # 초대가 안된경우 -> 초대 참여창
 
@@ -23,11 +36,6 @@ def meeting(request):
     # 라운드가 끝나고 pay가 남은경우 -> 금액과 송금 표시
 
     # return render(request, "login.html")
-    client_id = settings.KAKAO_REST_API_KEY
-    redirect_uri = "http://localhost:8000/meeting/kakao_callback"
-    return redirect(
-        f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-    )
 
 
 def kakao_callback(request):
@@ -51,4 +59,29 @@ def kakao_callback(request):
     expires_in = res.get("expires_in")
     refresh_token = res.get("refresh_token")
     refresh_token_expires_in = res.get("refresh_token_expires_in")
-    print(res)
+
+    kakao_id = get_kakao_id(access_token)
+    print(kakao_id)
+    if kakao_id is not None:  # 무사히 kakao_id를 받아왔을 때
+        if User.objects.filter(kakao_id=kakao_id).exists():  # 이미 회원인 경우
+            user = User.objects.get(kakao_id=kakao_id)
+            print("로그인 id: ", type(user))
+            if user is not None:
+                login(request, user)
+                return HttpResponse("로그인 성공")
+
+        else:  # 회원이 아닌 경우
+            serializer = KakaoUserSerializer(data={"kakao_id": kakao_id})
+            if serializer.is_valid():
+                user = serializer.save()
+                print("회원가입 id: ", type(user))
+                user = User.objects.get(kakao_id=kakao_id)
+                if user is not None:
+                    login(request, user)
+                    return HttpResponse("로그인 성공")
+            else:
+                return HttpResponse("회원가입 실패")
+
+    else:
+        # if token is not valid
+        return HttpResponse("토큰이 유효하지 않습니다.")

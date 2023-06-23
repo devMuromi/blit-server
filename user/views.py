@@ -40,28 +40,28 @@ class AuthAPIView(APIView):
             )
 
 
+def get_kakao_id(kakao_token: str) -> str:
+    KAKAO_API_SERVER_URL = "https://kapi.kakao.com/v2/user/me"
+    headers = {"Authorization": f"Bearer {kakao_token}", "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    try:
+        response = requests.get(KAKAO_API_SERVER_URL, headers=headers)
+        if response.status_code == 200:
+            return response.json().get("id")
+        elif response.status_code == 401:
+            return None
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred: {e}")
+        return None
+
+
 class KakaoAuthAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def get_kakao_id(self, kakao_token: str) -> str:
-        KAKAO_API_SERVER_URL = "https://kapi.kakao.com/v2/user/me"
-        headers = {"Authorization": f"Bearer {kakao_token}", "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-        try:
-            response = requests.get(KAKAO_API_SERVER_URL, headers=headers)
-            if response.status_code == 200:
-                return response.json().get("id")
-            elif response.status_code == 401:
-                return None
-            else:
-                return None
-        except requests.exceptions.RequestException as e:
-            print(f"Error occurred: {e}")
-            return None
-
     def post(self, request):
         kakao_token = request.data.get("kakao_token")
-        kakao_id = self.get_kakao_id(kakao_token)
-        print("kakao_id:", kakao_id)
+        kakao_id = get_kakao_id(kakao_token)
 
         if kakao_id is not None:
             if User.objects.filter(kakao_id=kakao_id).exists():

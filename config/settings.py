@@ -10,9 +10,11 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 SECRET_KEY = os.environ.get("SECRET_KEY", "1234")
 CLOVA_API_URL = os.environ.get("CLOVA_API_URL")
 CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY")
+KAKAO_REST_API_KEY = ""
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+# DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
 # Application definition
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     "user",
     "receipt",
     "ocr",
+    "meeting",
 ]
 
 
@@ -86,7 +89,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "web" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
