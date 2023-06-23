@@ -24,4 +24,5 @@ urlpatterns = [
     path("api/ocr/", include("ocr.urls")),
     path("admin/", admin.site.urls),
     path("api/meeting/", include("meeting.urls")),
+    path("meeting/", include("web.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
