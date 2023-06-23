@@ -5,9 +5,9 @@ from user.models import User
 # 각 회식
 class Meeting(models.Model):
     name = models.TextField()
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL)
+    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(auto_now=True)
-    meeting_code = models.TextField()  # URL에 들어갈 랜덤 문자열
+    meeting_code = models.TextField(unique=True)  # URL에 들어갈 랜덤 문자열
     attendants = models.ManyToManyField(User, related_name="meetings")
     # round_set
 

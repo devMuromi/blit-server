@@ -1,6 +1,7 @@
 from django.urls import path
-from pay import views
+from meeting import views
 
 urlpatterns = [
-    # path("", views.test),
+    path("", views.MeetingListCreate.as_view()),
+    # path("<int:pk>/", views.ReceiptDetail.as_view()),
 ]

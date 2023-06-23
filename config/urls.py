@@ -23,5 +23,5 @@ urlpatterns = [
     path("api/receipt/", include("receipt.urls")),
     path("api/ocr/", include("ocr.urls")),
     path("admin/", admin.site.urls),
-    path("api/pay/", include("pay.urls")),
+    path("api/meeting/", include("meeting.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
