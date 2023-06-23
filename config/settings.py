@@ -1,22 +1,22 @@
-import os
+import os, environ
 from pathlib import Path
 import datetime
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "1234")
-CLOVA_API_URL = os.environ.get("CLOVA_API_URL")
-CLOVA_API_KEY = os.environ.get("CLOVA_API_KEY")
-KAKAO_REST_API_KEY = ""
+# django-environ 라이브러리. 환경변수를 .env 파일에서 읽어온다
+env = environ.Env(DEBUG=(bool, True))
+environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
-DEBUG = True
+DEBUG = True if env("DJANGO_DEBUG") == "True" else False
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(" ")
+KAKAO_REST_API_KEY = env("KAKAO_REST_API_KEY")
+CLOVA_API_URL = env("CLOVA_API_URL")
+CLOVA_API_KEY = env("CLOVA_API_KEY")
+
 # Application definition
 
 INSTALLED_APPS = [

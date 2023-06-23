@@ -5,7 +5,7 @@ services:
     ports:
       - 80:80
     env_file:
-      - web.env
+      - .env
     volumes:
       - ./static:/staticfiles
     command: gunicorn config.wsgi --bind 0.0.0.0:80
