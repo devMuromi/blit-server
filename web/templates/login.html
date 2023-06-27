@@ -5,10 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script>
+      function openLoginWindow() {
+        loginWindow = window.open("https://kauth.kakao.com/oauth/authorize?client_id=0f49df9f21a04f34d86b98fcd9fbcf89&redirect_uri=http://localhost:8000/meeting/kakao_callback&response_type=code", "_blank");
+        loginWindow.onbeforeunload = function () {
+          // 새 창이 닫혔을 때 부모 창 새로고침
+          location.reload();
+        }
+      }
+    </script>
   </head>
 
   <body>
-    http://kauth.kakao.com/oauth/authorize?client_id=0f49df9f21a04f34d86b98fcd9fbcf89&redirect_uri=localhost:8000&response_type=code
+    로그인 안됨. 로그인 필요
+    <hr>
+    <button onclick="openLoginWindow()"></button>
 
   </body>
 

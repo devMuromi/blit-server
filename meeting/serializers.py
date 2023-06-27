@@ -18,6 +18,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         meeting_code = get_random_string(length=10)
         while Meeting.objects.filter(meeting_code=meeting_code).exists():
             meeting_code = get_random_string(length=10)
+        meeting.meeting_code = meeting_code
 
         meeting.save()
         return meeting

@@ -5,6 +5,7 @@ import requests
 from user.views import get_kakao_id
 from user.models import User
 from django.contrib.auth import login, authenticate
+from meeting.models import Meeting
 
 
 # 회식을 만드는 뷰
@@ -18,17 +19,23 @@ def kakao_login():
 
 
 def meeting(request):
-    user = request.user
-    if user.is_authenticated:
-        print(user)
-        return render(request, "invite.html")
+    meeting_code = request.GET.get("meeting_code")
 
-    else:  # 비로그인 상태
+    if meeting_code is None or not Meeting.objects.filter(meeting_code=meeting_code).exists():  # 모임 코드가 없거나 오류일 경우
+        return HttpResponse("존재하지 않는 모임입니다.")
+
+    user = request.user
+    if not user.is_authenticated:  # 비로그인시 로그인 페이지로 리다이렉트
         client_id = settings.KAKAO_REST_API_KEY
-    redirect_uri = "http://localhost:8000/meeting/kakao_callback"
-    return redirect(
-        f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
-    )
+        redirect_uri = f"http://{settings.SERVER_ADDRESS}/meeting/kakao_callback"
+        state = meeting_code
+        return redirect(
+            f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&state={state}&response_type=code",
+            target="_blank",
+        )
+
+    print(user)
+    return render(request, "invite.html")
 
     # 초대가 안된경우 -> 초대 참여창
 
@@ -40,6 +47,7 @@ def meeting(request):
 
 def kakao_callback(request):
     code = request.GET.get("code")
+    state = request.GET.get("state")
     # 인증 실패시
     if code is None:
         error = request.GET.get("error")
@@ -68,7 +76,7 @@ def kakao_callback(request):
             print("로그인 id: ", type(user))
             if user is not None:
                 login(request, user)
-                return HttpResponse("로그인 성공")
+                return redirect(f"/meeting?meeting_code={state}")
 
         else:  # 회원이 아닌 경우
             serializer = KakaoUserSerializer(data={"kakao_id": kakao_id})
@@ -78,7 +86,7 @@ def kakao_callback(request):
                 user = User.objects.get(kakao_id=kakao_id)
                 if user is not None:
                     login(request, user)
-                    return HttpResponse("로그인 성공")
+                    return redirect(f"localhost:8000/meeting?meeting_code={state}")
             else:
                 return HttpResponse("회원가입 실패")
 
