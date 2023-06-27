@@ -12,7 +12,7 @@ environ.Env.read_env(env_file=os.path.join(BASE_DIR, ".env"))
 DEBUG = True if env("DJANGO_DEBUG") == "True" else False
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(" ")
-SERVER_ADDESS = env("SERVER_ADDESS")
+SERVER_ADDRESS = env("SERVER_ADDRESS")
 
 KAKAO_REST_API_KEY = env("KAKAO_REST_API_KEY")
 CLOVA_API_URL = env("CLOVA_API_URL")
