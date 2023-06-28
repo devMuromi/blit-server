@@ -24,7 +24,9 @@ def meeting(request):
     if meeting_code is None or not Meeting.objects.filter(meeting_code=meeting_code).exists():  # 모임 코드가 없거나 오류일 경우
         return HttpResponse("존재하지 않는 모임입니다.")
 
+    meeting = Meeting.objects.get(meeting_code=meeting_code)
     user = request.user
+
     if not user.is_authenticated:  # 비로그인시 로그인 페이지로 리다이렉트
         client_id = settings.KAKAO_REST_API_KEY
         redirect_uri = f"http://{settings.SERVER_ADDRESS}/meeting/kakao_callback"
@@ -34,15 +36,17 @@ def meeting(request):
             target="_blank",
         )
 
-    print(user)
-    return render(request, "invite.html")
+    # 초대가 안된 경우 -> 초대 참여창
+    if not user in meeting.attendants.all():
+        return render(request, "invite.html")
 
-    # 초대가 안된경우 -> 초대 참여창
-
-    # 초대가 되어 이미 회원인경우 -> 각 라운드별 화면 표시
-    # 라운드가 끝나고 pay가 남은경우 -> 금액과 송금 표시
-
-    # return render(request, "login.html")
+    # 초대가 된 경우
+    # 모임 진행중인 경우 -> n차 참여했는지 확인
+    if meeting.is_active:
+        return render(request, "meeting.html")
+    # 모임이 끝나고 송금이 남은 경우 -> 카카오페이 송금 링크
+    else:
+        return render(request, "pay.html")
 
 
 def kakao_callback(request):
