@@ -58,6 +58,8 @@ class User(AbstractUser):
     kakao_id = models.CharField(max_length=255, unique=True, null=True)
     kakao_pay_code = models.CharField(max_length=32, null=True)
 
+    kakao_name = models.CharField(max_length=32, null=True)
+
     REQUIRED_FIELDS = []
 
     objects = UserManager()
