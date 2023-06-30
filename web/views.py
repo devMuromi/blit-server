@@ -55,7 +55,17 @@ def meeting(request):
         for round in meeting.rounds.all():
             if round.attendants.filter(id=user.id).exists():
                 total_cost += round.cost / round.attendants.count()
-        context = {"total_cost": total_cost}
+        total_cost = int(total_cost)
+        kakao_pay_code = meeting.created_by.kakao_pay_code
+
+        def to_hex_value(value):
+            return hex(value * 524288)[2:]
+
+        total_cost_converted = to_hex_value(total_cost)
+        context = {
+            "total_cost": total_cost,
+            "kakaopay_link": f"https://qr.kakaopay.com/{kakao_pay_code}{total_cost_converted}",
+        }
 
         return render(request, "pay.html", context)
 
