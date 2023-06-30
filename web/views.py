@@ -5,13 +5,10 @@ import requests
 from user.views import get_kakao_id
 from user.models import User
 from django.contrib.auth import login, authenticate
-from meeting.models import Meeting
-
-
-# 회식을 만드는 뷰
-# 초대 url로 접속가능한 템플릿
-# 회식관리 뷰로서 1차 끝나는등 했을때 전송하는 뷰 되면 자동으로 문자도 보내야함
-# 회식 끝나면 접속가능한 링크. 페이먼트 만드는 뷰
+from meeting.models import Meeting, Round
+from django.http import JsonResponse
+import json
+from user.serializers import KakaoUserSerializer
 
 
 def kakao_login():
@@ -38,15 +35,65 @@ def meeting(request):
 
     # 초대가 안된 경우 -> 초대 참여창
     if not user in meeting.attendants.all():
-        return render(request, "invite.html")
+        context = {"meeting_code": meeting_code}
+        return render(request, "invite.html", context)
 
     # 초대가 된 경우
     # 모임 진행중인 경우 -> n차 참여했는지 확인
     if meeting.is_active:
-        return render(request, "meeting.html")
+        current_round = Round.objects.filter(meeting=meeting).order_by("-round_number")[0]
+        is_attending = current_round.attendants.filter(id=user.id).exists()
+        context = {
+            "meeting_code": meeting_code,
+            "current_round_no": current_round.round_number,
+            "is_attending": is_attending,
+        }
+        return render(request, "meeting.html", context)
     # 모임이 끝나고 송금이 남은 경우 -> 카카오페이 송금 링크
     else:
-        return render(request, "pay.html")
+        total_cost = 0
+        for round in meeting.rounds.all():
+            if round.attendants.filter(id=user.id).exists():
+                total_cost += round.cost / round.attendants.count()
+        context = {"total_cost": total_cost}
+
+        return render(request, "pay.html", context)
+
+
+def join_meeting(request):
+    print("haha")
+    if request.method == "POST":
+        body_unicode = request.body.decode("utf-8")
+        body = json.loads(body_unicode)
+        meeting_code = body["meeting_code"]
+        print(meeting_code)
+        meeting = Meeting.objects.get(meeting_code=meeting_code)
+        print(meeting)
+        user = request.user
+        meeting.attendants.add(user)
+        meeting.save()
+        response_data = {"message": "모임에 성공적으로 참여했습니다."}
+        return JsonResponse(response_data)
+    else:
+        response_data = {"message": "잘못된 요청입니다."}
+        return JsonResponse(response_data, status=400)
+
+
+def join_round(request):
+    if request.method == "POST":
+        body_unicode = request.body.decode("utf-8")
+        body = json.loads(body_unicode)
+        meeting_code = body["meeting_code"]
+        meeting = Meeting.objects.get(meeting_code=meeting_code)
+        user = request.user
+        round = Round.objects.filter(meeting=meeting).order_by("-round_number")[0]
+        round.attendants.add(user)
+        round.save()
+        response_data = {"message": "성공적으로 참여했습니다."}
+        return JsonResponse(response_data)
+    else:
+        response_data = {"message": "잘못된 요청입니다."}
+        return JsonResponse(response_data, status=400)
 
 
 def kakao_callback(request):
@@ -90,7 +137,7 @@ def kakao_callback(request):
                 user = User.objects.get(kakao_id=kakao_id)
                 if user is not None:
                     login(request, user)
-                    return redirect(f"localhost:8000/meeting?meeting_code={state}")
+                    return redirect(f"/meeting?meeting_code={state}")
             else:
                 return HttpResponse("회원가입 실패")
 

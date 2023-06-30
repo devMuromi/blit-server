@@ -29,7 +29,7 @@
         document
           .getElementById("acceptButton")
           .addEventListener("click", function () {
-            fetch('/meeting/join_meeting', {
+            fetch('/meeting/join_round', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -53,9 +53,14 @@
   </head>
 
   <body>
-    <h1>초대 수락 페이지</h1>
-    <p>해당 모임에 참여하시겠습니까?</p>
-    <button id="acceptButton">수락</button>
+    현재
+    {{ current_round_no }}차 진행중입니다.
+    {% if is_attending %}
+      <p>참가중입니다.</p>
+    {% else %}
+      <p>참가중이 아닙니다.</p>
+      <button id="acceptButton">참가하기</button>
+    {% endif %}
   </body>
 
 </html>

@@ -5,9 +5,11 @@ from django.utils.crypto import get_random_string
 
 
 class MeetingSerializer(serializers.ModelSerializer):
+    attendants = serializers.SerializerMethodField()
+
     class Meta:
         model = Meeting
-        fields = ("name", "created_by", "created_at")
+        fields = ("name", "created_by", "created_at", "meeting_code", "attendants", "is_active")
 
     def create(self, validated_data):
         meeting = super().create(validated_data)
@@ -22,3 +24,6 @@ class MeetingSerializer(serializers.ModelSerializer):
 
         meeting.save()
         return meeting
+
+    def get_attendants(self, obj):
+        return obj.attendants.values_list("username", flat=True)
