@@ -2,12 +2,11 @@ from django.http import HttpResponse
 from django.conf import settings
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
+from rest_framework import generics, permissions
 
-from rest_framework import generics
 
-from meeting.models import Meeting
-from meeting.serializers import MeetingSerializer
+from meeting.models import Meeting, Round
+from meeting.serializers import MeetingSerializer, RoundSerializer
 
 
 class MeetingListCreate(generics.ListCreateAPIView):
@@ -21,3 +20,11 @@ class MeetingListCreate(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
+
+class RoundCreate(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = RoundSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()

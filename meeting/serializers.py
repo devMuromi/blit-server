@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from meeting.models import Meeting
 from datetime import datetime
 from django.utils.crypto import get_random_string
+
+from meeting.models import Meeting, Round
 
 
 class MeetingSerializer(serializers.ModelSerializer):
@@ -27,3 +28,31 @@ class MeetingSerializer(serializers.ModelSerializer):
 
     def get_attendants(self, obj):
         return obj.attendants.values_list("kakao_name", flat=True)
+
+
+class RoundSerializer(serializers.ModelSerializer):
+    meeting_code = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = Round
+        # exclude = ("attendants", "cost", "round_number")
+        # fields = ["meeting"]
+        fields = ["meeting_code"]
+
+    def create(self, validated_data):
+        meeting_code = validated_data.pop("meeting_code")
+        try:
+            meeting = Meeting.objects.get(meeting_code=meeting_code)  # meeting_code를 사용하여 해당 meeting 객체 가져오기
+        except Meeting.DoesNotExist:
+            raise serializers.ValidationError("Invalid meeting code.")  # 유효하지 않은 meeting_code인 경우 예외 처리
+
+        owner = self.context["request"].user  # 현재 사용자의 meeting 가져오기
+        validated_data["attendants"] = [owner.pk]  # meeting의 소유자를 attendants에 포함
+        validated_data["cost"] = 0  # cost 필드 자동으로 0으로 설정
+        validated_data["round_number"] = meeting.rounds.count() + 1
+        validated_data["meeting"] = meeting
+
+        round = super().create(validated_data)
+        round.meeting = meeting
+        round.save()
+        return round
