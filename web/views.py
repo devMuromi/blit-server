@@ -119,7 +119,7 @@ def kakao_callback(request):
     refresh_token = res.get("refresh_token")
     refresh_token_expires_in = res.get("refresh_token_expires_in")
 
-    kakao_id = get_kakao_id(access_token)
+    kakao_id, kakao_name = get_kakao_id(access_token)
     print(kakao_id)
     if kakao_id is not None:  # 무사히 kakao_id를 받아왔을 때
         if User.objects.filter(kakao_id=kakao_id).exists():  # 이미 회원인 경우
@@ -130,7 +130,7 @@ def kakao_callback(request):
                 return redirect(f"/meeting?meeting_code={state}")
 
         else:  # 회원이 아닌 경우
-            serializer = KakaoUserSerializer(data={"kakao_id": kakao_id})
+            serializer = KakaoUserSerializer(data={"kakao_id": kakao_id, "kakao_name": kakao_name})
             if serializer.is_valid():
                 user = serializer.save()
                 print("회원가입 id: ", type(user))

@@ -40,13 +40,15 @@ class AuthAPIView(APIView):
             )
 
 
-def get_kakao_id(kakao_token: str) -> str:
+def get_kakao_id(kakao_token: str):
     KAKAO_API_SERVER_URL = "https://kapi.kakao.com/v2/user/me"
     headers = {"Authorization": f"Bearer {kakao_token}", "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
     try:
         response = requests.get(KAKAO_API_SERVER_URL, headers=headers)
         if response.status_code == 200:
-            return response.json().get("id")
+            kakao_id = response.json().get("id")
+            kakao_name = response.json().get("properties").get("nickname")
+            return (kakao_id, kakao_name)
         elif response.status_code == 401:
             return None
         else:
@@ -61,7 +63,7 @@ class KakaoAuthAPIView(APIView):
 
     def post(self, request):
         kakao_token = request.data.get("kakao_token")
-        kakao_id = get_kakao_id(kakao_token)
+        kakao_id, kakao_name = get_kakao_id(kakao_token)
 
         if kakao_id is not None:
             if User.objects.filter(kakao_id=kakao_id).exists():
@@ -83,7 +85,7 @@ class KakaoAuthAPIView(APIView):
                 )
                 return res
             else:
-                serializer = KakaoUserSerializer(data={"kakao_id": kakao_id})
+                serializer = KakaoUserSerializer(data={"kakao_id": kakao_id, "kakao_name": kakao_name})
                 if serializer.is_valid():
                     user = serializer.save()
                     token = TokenObtainPairSerializer.get_token(user)

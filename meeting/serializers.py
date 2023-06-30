@@ -26,4 +26,4 @@ class MeetingSerializer(serializers.ModelSerializer):
         return meeting
 
     def get_attendants(self, obj):
-        return obj.attendants.values_list("username", flat=True)
+        return obj.attendants.values_list("kakao_name", flat=True)

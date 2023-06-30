@@ -18,8 +18,8 @@ class KakaoUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "is_staff", "kakao_id")
+        fields = ("username", "is_staff", "kakao_id", "kakao_name")
 
     def create(self, validated_data):
-        user = User.objects.create_kakao_user(kakao_id=validated_data["kakao_id"])
+        user = User.objects.create_kakao_user(kakao_id=validated_data["kakao_id"], kakao_name=validated_data["kakao_name"])
         return user
