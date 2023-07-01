@@ -7,6 +7,7 @@ from meeting.models import Meeting, Round
 
 class MeetingSerializer(serializers.ModelSerializer):
     attendants = serializers.SerializerMethodField()
+    meeting_code = serializers.CharField(required=False)
 
     class Meta:
         model = Meeting
