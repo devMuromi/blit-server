@@ -33,7 +33,18 @@ class MeetingSerializer(serializers.ModelSerializer):
         return obj.attendants.values_list("kakao_name", flat=True)
 
     def get_rounds(self, obj):
-        return obj.rounds.values_list("round_number", flat=True)
+        rounds = obj.rounds.values("round_number", "cost")
+        result = []
+        for round in rounds:
+            round_data = {
+                "round_number": round["round_number"],
+                "attendants": list(
+                    obj.rounds.filter(round_number=round["round_number"]).values_list("attendants__kakao_name", flat=True)
+                ),
+                "cost": round["cost"],
+            }
+            result.append(round_data)
+        return result
 
 
 class RoundSerializer(serializers.ModelSerializer):
