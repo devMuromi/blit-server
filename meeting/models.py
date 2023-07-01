@@ -10,7 +10,7 @@ class Meeting(models.Model):
     meeting_code = models.TextField(unique=True)  # URL에 들어갈 랜덤 문자열
     attendants = models.ManyToManyField(User, related_name="meetings", blank=True)
     is_active = models.BooleanField(default=True)  # 회식이 진행중인지 여부
-    # round_set
+    # rounds
 
     def __str__(self):
         return f"{self.name} By {self.created_by.username}"

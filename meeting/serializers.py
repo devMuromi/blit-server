@@ -31,16 +31,16 @@ class MeetingSerializer(serializers.ModelSerializer):
 
 
 class RoundSerializer(serializers.ModelSerializer):
-    meeting_code = serializers.CharField(write_only=True)
+    # meeting_code = serializers.CharField(write_only=True)
+    round_number = serializers.IntegerField(read_only=True)
+    cost = serializers.IntegerField(required=False)
 
     class Meta:
         model = Round
-        # exclude = ("attendants", "cost", "round_number")
-        # fields = ["meeting"]
-        fields = ["meeting_code"]
+        exclude = ["meeting"]
 
     def create(self, validated_data):
-        meeting_code = validated_data.pop("meeting_code")
+        meeting_code = self.context["request"].query_params.get("meeting_code")
         try:
             meeting = Meeting.objects.get(meeting_code=meeting_code)  # meeting_code를 사용하여 해당 meeting 객체 가져오기
         except Meeting.DoesNotExist:
@@ -55,4 +55,25 @@ class RoundSerializer(serializers.ModelSerializer):
         round = super().create(validated_data)
         round.meeting = meeting
         round.save()
+        return round
+
+    def update(self, instance, validated_data):
+        meeting_code = self.context["request"].query_params.get("meeting_code")
+        try:
+            meeting = Meeting.objects.get(meeting_code=meeting_code)  # meeting_code를 사용하여 해당 meeting 객체 가져오기
+        except Meeting.DoesNotExist:
+            raise serializers.ValidationError("Invalid meeting code.")  # 유효하지 않은 meeting_code인 경우 예외 처리
+
+        round_number = self.data.get("round_number")
+        cost = validated_data.get("cost")
+
+        try:
+            round = meeting.rounds.get(round_number=round_number)
+        except Round.DoesNotExist:
+            raise serializers.ValidationError("Invalid round number.")
+
+        if cost is not None:
+            round.cost = cost
+        round.save()
+
         return round

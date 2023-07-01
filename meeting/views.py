@@ -30,3 +30,9 @@ class RoundCreate(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save()
+
+
+class RoundUpdate(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsMeetingOwner]
+    serializer_class = RoundSerializer
+    queryset = Round.objects.all()

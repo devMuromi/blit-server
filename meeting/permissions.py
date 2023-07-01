@@ -5,7 +5,7 @@ from meeting.models import Meeting
 
 class IsMeetingOwner(BasePermission):
     def has_permission(self, request, view):
-        meeting_code = request.data.get("meeting_code")
+        meeting_code = request.GET.get("meeting_code")
         if meeting_code is None:
             return False
         meeting = Meeting.objects.get(meeting_code=meeting_code)
