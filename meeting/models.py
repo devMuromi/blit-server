@@ -19,7 +19,8 @@ class Meeting(models.Model):
         created = not self.pk  # Check if the Meeting is being created or updated
         super().save(*args, **kwargs)
         if created:
-            Round.objects.create(meeting=self, round_number=1, cost=0)  # Create Round 1
+            round = Round.objects.create(meeting=self, round_number=1, cost=0)  # Create Round 1
+            round.attendants.add(self.created_by)  # Add the creator to Round 1
 
 
 # 1차, 2차, 3차 라운드
