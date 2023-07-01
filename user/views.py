@@ -1,5 +1,4 @@
 import requests
-from rest_framework import generics
 from rest_framework.views import APIView
 from user.models import User
 from user.serializers import BasicUserSerializer, KakaoUserSerializer
@@ -7,6 +6,9 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
 from rest_framework import permissions, status
+from rest_framework.decorators import api_view
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
 class AuthAPIView(APIView):
@@ -116,33 +118,6 @@ class KakaoAuthAPIView(APIView):
             )
 
 
-# class RegisterAPIView(APIView):
-#     def post(self, request):
-#         serializer = BasicUserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             user = serializer.save()
-#             token = TokenObtainPairSerializer.get_token(user)
-#             refresh_token = str(token)
-#             access_token = str(token.access_token)
-#             res = Response(
-#                 {
-#                     # "user": serializer.data,
-#                     "message": "register successs",
-#                     "token": {
-#                         "access": access_token,
-#                         "refresh": refresh_token,
-#                     },
-#                 },
-#                 status=status.HTTP_200_OK,
-#             )
-
-#             res.set_cookie("access", access_token, httponly=True)
-#             res.set_cookie("refresh", refresh_token, httponly=True)
-
-#             return res
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserDetail(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -150,3 +125,18 @@ class UserDetail(APIView):
         user = request.user
         serializer = BasicUserSerializer(user)
         return Response(serializer.data)
+
+
+@api_view(["POST"])
+@login_required
+def update_kakao_pay_code(request):
+    user = request.user
+    kakao_pay_code = request.data.get("kakao_pay_code")
+
+    if not kakao_pay_code:
+        return Response({"error": "kakao_pay_code field is required."}, status=400)
+
+    user.kakao_pay_code = kakao_pay_code
+    user.save()
+
+    return JsonResponse({"success": "kakao_pay_code has been updated."})

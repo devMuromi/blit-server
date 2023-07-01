@@ -6,7 +6,7 @@ class BasicUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # fields = "__all__"
-        fields = ("username", "is_staff", "kakao_id")
+        fields = ("username", "is_staff", "kakao_id", "kakao_pay_code")
 
     def create(self, validated_data):
         user = User.objects.create_user(username=validated_data["username"], password=validated_data["password"])
