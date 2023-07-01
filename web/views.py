@@ -119,7 +119,7 @@ def kakao_callback(request):
     data = {
         "grant_type": "authorization_code",  # authorization_code로 고정
         "client_id": settings.KAKAO_REST_API_KEY,
-        "redirect_uri": "http://localhost:8000/meeting/kakao_callback",
+        "redirect_uri": f"http://{settings.SERVER_ADDRESS}/meeting/kakao_callback",
         "code": code,
     }
     res = requests.post(TOKEN_URL, data=data).json()
