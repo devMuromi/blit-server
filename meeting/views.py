@@ -4,7 +4,7 @@ from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import generics, permissions
 
-from meeting.permissions import IsMeetingOwner
+from meeting.permissions import IsMeetingOwner, IsRoundOwner
 
 
 from meeting.models import Meeting, Round
@@ -24,8 +24,17 @@ class MeetingListCreate(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user)
 
 
-class RoundCreate(generics.CreateAPIView):
+class MeetingUpdate(generics.UpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsMeetingOwner]
+    serializer_class = MeetingSerializer
+    lookup_field = "meeting_code"
+
+    def get_queryset(self):
+        return Meeting.objects.all()
+
+
+class RoundCreate(generics.CreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, IsRoundOwner]
     serializer_class = RoundSerializer
 
     def perform_create(self, serializer):
@@ -33,6 +42,6 @@ class RoundCreate(generics.CreateAPIView):
 
 
 class RoundUpdate(generics.UpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated, IsMeetingOwner]
+    permission_classes = [permissions.IsAuthenticated, IsRoundOwner]
     serializer_class = RoundSerializer
     queryset = Round.objects.all()
