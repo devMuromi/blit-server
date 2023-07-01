@@ -8,10 +8,11 @@ from meeting.models import Meeting, Round
 class MeetingSerializer(serializers.ModelSerializer):
     attendants = serializers.SerializerMethodField()
     meeting_code = serializers.CharField(required=False)
+    rounds = serializers.SerializerMethodField()
 
     class Meta:
         model = Meeting
-        fields = ("name", "created_by", "created_at", "meeting_code", "attendants", "is_active")
+        fields = ("name", "created_by", "created_at", "meeting_code", "attendants", "is_active", "rounds")
 
     def create(self, validated_data):
         meeting = super().create(validated_data)
@@ -30,6 +31,9 @@ class MeetingSerializer(serializers.ModelSerializer):
 
     def get_attendants(self, obj):
         return obj.attendants.values_list("kakao_name", flat=True)
+
+    def get_rounds(self, obj):
+        return obj.rounds.values_list("round_number", flat=True)
 
 
 class RoundSerializer(serializers.ModelSerializer):
