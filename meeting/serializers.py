@@ -17,6 +17,7 @@ class MeetingSerializer(serializers.ModelSerializer):
         meeting = super().create(validated_data)
         name = validated_data.get("name")
         meeting.created_by = self.context["request"].user
+        meeting.is_active = True
 
         # 무작위 문자열 중복 없을때까지 생성
         meeting_code = get_random_string(length=10)
