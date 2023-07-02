@@ -154,3 +154,4 @@ def kakao_callback(request):
     else:
         # if token is not valid
         return HttpResponse("토큰이 유효하지 않습니다.")
+

@@ -18,6 +18,12 @@ KAKAO_REST_API_KEY = env("KAKAO_REST_API_KEY")
 CLOVA_API_URL = env("CLOVA_API_URL")
 CLOVA_API_KEY = env("CLOVA_API_KEY")
 
+CORS_ORIGIN_ALLOW_ALL = True  # Set to True to allow all origins
+# CORS_ORIGIN_WHITELIST = [
+#     "http://localhost:3000",  # Add the allowed frontend origin(s)
+#     # Add more origins as needed
+# ]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -30,6 +36,7 @@ INSTALLED_APPS = [
     # 라이브러리
     "rest_framework",
     "rest_framework_simplejwt",
+    "corsheaders",
     # 앱
     "user",
     "receipt",
@@ -49,7 +56,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=60),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=6000),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": True,
@@ -76,6 +83,8 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
