@@ -24,7 +24,7 @@ class MeetingListCreate(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user)
 
 
-class MeetingUpdate(generics.UpdateAPIView):
+class MeetingRetrieveUpdate(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated, IsMeetingOwner]
     serializer_class = MeetingSerializer
     lookup_field = "meeting_code"
