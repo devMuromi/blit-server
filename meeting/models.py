@@ -21,6 +21,7 @@ class Meeting(models.Model):
         if created:
             round = Round.objects.create(meeting=self, round_number=1, cost=0)  # Create Round 1
             round.attendants.add(self.created_by)  # Add the creator to Round 1
+            self.attendants.add(self.created_by)  # Add the creator to attendants
 
 
 # 1차, 2차, 3차 라운드
