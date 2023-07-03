@@ -33,3 +33,4 @@ sqlparse==0.4.3 ; python_version >= "3.10" and python_version < "4.0"
 tomli==2.0.1 ; python_version >= "3.10" and python_version < "3.11"
 tzdata==2022.7 ; python_version >= "3.10" and python_version < "4.0"
 urllib3==2.0.2 ; python_version >= "3.10" and python_version < "4.0"
+django-cors-headers==4.1.0 ;
