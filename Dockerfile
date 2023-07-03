@@ -12,6 +12,4 @@ COPY . /web
 
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 80
-
-CMD gunicorn config.wsgi --bind 0.0.0.0:80
+CMD gunicorn config.wsgi:application --bind 0.0.0.0:80
