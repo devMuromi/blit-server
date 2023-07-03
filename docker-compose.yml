@@ -1,9 +1,11 @@
 version: "3"
 services:
-  web:
+  django:
     build: .
+    ports:
+      - 80:80
     env_file:
       - .env
     volumes:
       - ./static:/staticfiles
-    command: gunicorn config.wsgi --bind 0.0.0.0:8000
+    command: gunicorn config.wsgi --bind 0.0.0.0:80
