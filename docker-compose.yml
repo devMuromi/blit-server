@@ -8,4 +8,4 @@ services:
       - .env
     volumes:
       - ./static:/staticfiles
-    command: gunicorn config.wsgi --bind 0.0.0.0:80
+    command: python manage.py runsslserver --certificate django.crt --key django.key --addrport 0.0.0.0:80
