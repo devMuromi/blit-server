@@ -14,4 +14,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 80
 
-CMD python manage.py runsslserver --certificate django.crt --key django.key --addrport 0.0.0.0:80
+CMD python manage.py runsslserver --certificate django.crt --key django.key
