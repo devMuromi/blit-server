@@ -18,4 +18,4 @@ services:
       - ./django.crt:/etc/nginx/certs/django.crt
       - ./django.key:/etc/nginx/certs/django.key
     depends_on:
-      - django
+      - web
