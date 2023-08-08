@@ -18,12 +18,12 @@ KAKAO_REST_API_KEY = env("KAKAO_REST_API_KEY")
 CLOVA_API_URL = env("CLOVA_API_URL")
 CLOVA_API_KEY = env("CLOVA_API_KEY")
 
-CORS_ORIGIN_ALLOW_ALL = False  # Set to True to allow all origins
-CORS_ORIGIN_WHITELIST = [
-    "https://blit.chungran.net",  # Add the allowed frontend origin(s)
-    "http://localhost:3000",
-    # Add more origins as needed
-]
+CORS_ORIGIN_ALLOW_ALL = True  # Set to True to allow all origins
+# CORS_ORIGIN_WHITELIST = [
+#     "https://blit.chungran.net",  # Add the allowed frontend origin(s)
+#     "http://localhost:3000",
+#     # Add more origins as needed
+# ]
 
 # Application definition
 

@@ -81,7 +81,8 @@ class RoundSerializer(serializers.ModelSerializer):
         except Meeting.DoesNotExist:
             raise serializers.ValidationError("Invalid meeting code.")  # 유효하지 않은 meeting_code인 경우 예외 처리
 
-        round_number = self.data.get("round_number")
+        round_number = self.context["view"].kwargs.get("pk")
+        print(round_number)
         cost = validated_data.get("cost")
 
         try:
