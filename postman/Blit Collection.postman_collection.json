@@ -1,0 +1,763 @@
+{
+	"info": {
+		"_postman_id": "0c46c42a-13ed-43a2-b750-39a521e795f9",
+		"name": "Blit Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25126900",
+		"_collection_link": "https://basak-crispy.postman.co/workspace/NPT-a~f25beafa-12ed-4e80-bc8c-bbaa2b2ded50/collection/25126900-0c46c42a-13ed-43a2-b750-39a521e795f9?action=share&source=collection_link&creator=25126900"
+	},
+	"item": [
+		{
+			"name": "receipt",
+			"item": [
+				{
+					"name": "get receipt list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/receipt/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"receipt",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get receipt",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/receipt/1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"receipt",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post receipt",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "image_title2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/Users/wibaek/Downloads/receipts/971120_20170705143932_354_0001.jpg"
+								},
+								{
+									"key": "tag",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "tag",
+									"value": "3",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/receipt/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"receipt",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OCR",
+			"item": [
+				{
+					"name": "get ocr",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/ocr/1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"ocr",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "basic register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"aaa.com\",\n    \"password\": \"a\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/register/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register",
+								""
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "a@a.com",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "basic login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"aa\",\n    \"password\": \"aa\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/basic/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"basic",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "kakao login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"kakao_token\": \"cwJzVotMuffVSNYhTW9cBu-FiErMnECfBoeaUqboCj10aQAAAYkapfxd\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/kakao/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"kakao",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/auth/user/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post kakao pay code",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Azure vision api",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Ocp-Apim-Subscription-Key",
+								"value": "HERE COMES KEY",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/octet-stream",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/Users/wibaek/Downloads/receipts/29161964_pVMIGsE-PEyUYYWwFNhV-2VEqUvkIKGAwNIeU74UVZY.jpg"
+							}
+						},
+						"url": {
+							"raw": "https://blit.cognitiveservices.azure.com/vision/v3.2/ocr?language=ko&detectOrientation=true&model-version=latest",
+							"protocol": "https",
+							"host": [
+								"blit",
+								"cognitiveservices",
+								"azure",
+								"com"
+							],
+							"path": [
+								"vision",
+								"v3.2",
+								"ocr"
+							],
+							"query": [
+								{
+									"key": "language",
+									"value": "ko"
+								},
+								{
+									"key": "detectOrientation",
+									"value": "true"
+								},
+								{
+									"key": "model-version",
+									"value": "latest"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clova OCR api",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-OCR-SECRET",
+								"value": "HERE COMES KEY",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"images\": [\n      {\n        \"format\": \"png\",\n        \"name\": \"medium\",\n        \"data\": null,\n      }\n    ],\n    \"lang\": \"ko\",\n    \"requestId\": \"string\",\n    \"resultType\": \"string\",\n    \"timestamp\": {{$timestamp}},\n    \"version\": \"V2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "URL..",
+							"host": [
+								"URL",
+								"",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "pay",
+			"item": [
+				{
+					"name": "test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/pay/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"pay",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "kakao test",
+			"item": [
+				{
+					"name": "get token",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "0f49df9f21a04f34d86b98fcd9fbcf89",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "http://localhost:3000/Intro",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "d1xB-BViHhy8QakYutjcP7RhpLd_juTf0MNNk4fYlBgksw0J9hD0WPKpRo5QyYOitBCJRQoqJZAAAAGJD2LWGg\n",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://kauth.kakao.com/oauth/token",
+							"protocol": "https",
+							"host": [
+								"kauth",
+								"kakao",
+								"com"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "zQE8fQ9Fn6rRad7hCmx4YtaDf0hODdIvZWNej5DBCiolUAAAAYi4gZhq",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://kapi.kakao.com/v2/user/me",
+							"protocol": "https",
+							"host": [
+								"kapi",
+								"kakao",
+								"com"
+							],
+							"path": [
+								"v2",
+								"user",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "0f8Nakga_fR25KWQ4WGifbQzcEzzbTKRbG0Wb00XCiolkQAAAYkPYzZ2",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://kapi.kakao.com/v1/user/access_token_info",
+							"protocol": "https",
+							"host": [
+								"kapi",
+								"kakao",
+								"com"
+							],
+							"path": [
+								"v1",
+								"user",
+								"access_token_info"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "meeting",
+			"item": [
+				{
+					"name": "get meeting list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/meeting/meeting/",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"meeting",
+								"meeting",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post meeting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "모임1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/meeting/meeting",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"meeting",
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get meeting detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/meeting/meeting/wEyrZ2sQWi",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"meeting",
+								"meeting",
+								"wEyrZ2sQWi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch meeting",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "is_active",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "is_active",
+									"value": "false",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/meeting/meeting/Vb5oBo9mVa",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"meeting",
+								"meeting",
+								"Vb5oBo9mVa"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "round",
+			"item": [
+				{
+					"name": "post round",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "meeting_code",
+									"value": "EeF0kfWVmd",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/meeting/round/2/?meeting_code=wEyrZ2sQWi",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"meeting",
+								"round",
+								"2",
+								""
+							],
+							"query": [
+								{
+									"key": "meeting_code",
+									"value": "wEyrZ2sQWi"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch round",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "cost",
+									"value": "20000",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/api/meeting/round/3/?meeting_code=wEyrZ2sQWi",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"meeting",
+								"round",
+								"3",
+								""
+							],
+							"query": [
+								{
+									"key": "meeting_code",
+									"value": "wEyrZ2sQWi"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "https://api.chungran.net",
+			"disabled": true
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "aa",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "a",
+			"type": "string"
+		},
+		{
+			"key": "URL",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "URL",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
